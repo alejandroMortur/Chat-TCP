@@ -1,13 +1,16 @@
+package clienteChat;
+
 import javax.swing.*;
+
 
 public class Main {
 
     public static void main(String[] args) {
 
-        Formulario h = new Formulario();
+        registro h = new registro();
 
-        h.setContentPane(h.panel_principal);
-        h.setTitle("saludo a todos");
+        h.setContentPane(h.panel_Registro);
+        h.setTitle("Entrada chat");
         h.setSize(300,400);
         h.setVisible(true);
         h.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
