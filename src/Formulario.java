@@ -19,6 +19,7 @@ public class Formulario  extends  JFrame{
                     String nombre = campo_nombre.getText();
                     String contraseña = campo_contraseña.getText();
 
+
                     JOptionPane.showMessageDialog(pulsa_registro, "Datos obtenidos: Nombre: "+nombre+", Contraseña: "+contraseña);
 
                 }
