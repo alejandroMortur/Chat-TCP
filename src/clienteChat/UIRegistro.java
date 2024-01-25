@@ -50,46 +50,74 @@ public class UIRegistro extends JFrame {
                     String nombre = campo_nombre.getText();
                     String contraseña = campo_contraseña.getText();
 
-                    try {
-                        if (intentos >= 0) {
-                            // Envío de datos al servidor con un separador
-                            output.write((nombre + "\n" + contraseña + "\n").getBytes());
+                    if(comprobarEntrada(nombre) && comprobarEntrada(contraseña)){
 
-                            // Espera la respuesta del servidor
-                            int respuesta = input.read();
-                            System.out.println(respuesta);
+                        try {
+                            if (intentos >= 0) {
+                                // Envío de datos al servidor con un separador
+                                output.write((nombre + "\n" + contraseña + "\n").getBytes());
 
-                            if (respuesta == 53) {
+                                // Espera la respuesta del servidor
+                                int respuesta = input.read();
+                                System.out.println(respuesta);
 
-                                System.out.println("\n---------------------------------------------\n");
-                                System.out.println("CREDENCIALES ACEPTADAS POR EL SERVIDOR");
-                                System.out.println("\n---------------------------------------------\n");
+                                if (respuesta == 53) {
 
-                                Main.lanzarChat(clienteSocket, input, output);
+                                    System.out.println("\n---------------------------------------------\n");
+                                    System.out.println("CREDENCIALES ACEPTADAS POR EL SERVIDOR");
+                                    System.out.println("\n---------------------------------------------\n");
 
+                                    Main.lanzarChat(clienteSocket, input, output);
+
+                                } else {
+
+                                    --intentos;
+                                    JOptionPane.showMessageDialog(pulsa_registro, "Error: Usuario o contraseña incorrectos");
+
+                                }
                             } else {
 
-                                --intentos;
-                                JOptionPane.showMessageDialog(pulsa_registro, "Error: Usuario o contraseña incorrectos");
+                                JOptionPane.showMessageDialog(pulsa_registro, "Error: Ha alcanzado el máximo de intentos");
+                                campo_contraseña.enable(false);
+                                campo_nombre.enable(false);
 
                             }
-                        } else {
 
-                            JOptionPane.showMessageDialog(pulsa_registro, "Error: Ha alcanzado el máximo de intentos");
-                            campo_contraseña.enable(false);
-                            campo_nombre.enable(false);
+                        } catch (IOException ex) {
+
+                            throw new RuntimeException(ex);
 
                         }
 
-                    } catch (IOException ex) {
+                    }else{
 
-                        throw new RuntimeException(ex);
+                        JOptionPane.showMessageDialog(pulsa_registro, "Error: El nombre de usuario y contraseña debem tener una letra mayuscula");
 
                     }
 
                 }
 
             });
+
+    }
+
+    //comprobar si la contraseña aportada no esta vacia y tiene una mayuscula
+    public boolean comprobarEntrada(String entrada){
+
+        if(!entrada.isBlank()){
+
+            for (char caracter : entrada.toCharArray()) {
+                if (Character.isUpperCase(caracter)) {
+                    return true; // La cadena tiene al menos una letra mayúscula
+                }
+            }
+            return false; // La cadena no tiene letras mayúsculas
+
+        }else{
+
+            return false;
+
+        }
 
     }
 

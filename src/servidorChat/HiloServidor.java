@@ -10,10 +10,10 @@ public class HiloServidor implements Runnable {
     private String archivo = "./src/servidorChat/usuarios.txt";
     private String nombreCliente = "";
     private String contraseñaCliente = "";
-    private Socket clienteSocket;
+    private final Socket clienteSocket;
     private BufferedReader lector;
     private PrintWriter escritor;
-    private static List<HiloServidor> clientesConectados = new ArrayList<>();
+    private static final List<HiloServidor> clientesConectados = new ArrayList<>();
 
     public HiloServidor(Socket clienteSocket) {
         this.clienteSocket = clienteSocket;
@@ -52,7 +52,6 @@ public class HiloServidor implements Runnable {
                     System.out.println("\n---------------------------------------------------------------------\n");
                     System.out.println("EL usuario: "+nombreCliente+" se ha registrado correctamente con la contraseña: "+contraseñaCliente);
                     System.out.println("\n---------------------------------------------------------------------\n");
-                    broadcast(nombreCliente + " se ha unido al chat.");
 
                 }
 
@@ -83,7 +82,7 @@ public class HiloServidor implements Runnable {
                 }
 
                 // Leer mensajes del cliente y reenviarlos a todos los clientes
-                broadcast(nombreCliente + ": " + mensaje);
+
             }
 
         } catch (IOException e) {
@@ -91,10 +90,6 @@ public class HiloServidor implements Runnable {
             e.printStackTrace();
 
         } finally {
-
-            // Eliminar el hilo del cliente de la lista y cerrar la conexión
-            clientesConectados.remove(this);
-            broadcast(nombreCliente + " se ha desconectado.");
 
             try {
 
@@ -105,16 +100,6 @@ public class HiloServidor implements Runnable {
                 e.printStackTrace();
 
             }
-
-        }
-
-    }
-
-    private void broadcast(String mensaje) {
-        // Reenviar el mensaje a todos los clientes conectados
-        for (HiloServidor cliente : clientesConectados) {
-
-            cliente.escritor.println(mensaje);
 
         }
 
