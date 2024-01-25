@@ -112,7 +112,7 @@ public class UIRegistro extends JFrame {
 
                     }else{
 
-                        JOptionPane.showMessageDialog(pulsa_registro, "Error: El nombre de usuario y contraseña debem tener una letra mayuscula");
+                        JOptionPane.showMessageDialog(pulsa_registro, "Error: \n\nEl nombre de usuario y contraseña deben tener una letra mayuscula\nO no deben estar vacio los campos del usuario");
 
                         //limpiado de campos
                         campo_contraseña.setText("");
