@@ -46,6 +46,10 @@ public class UIChat extends JFrame {
     //metodo que setea los eventos de la interfaz
     public void setEventos() {
 
+        System.out.println("\n---------------------------------------------\n");
+        System.out.println("INTERFAZ LANZADA");
+        System.out.println("\n---------------------------------------------\n");
+
         //evento cerrar ventana
         addWindowListener(new WindowAdapter() {
             @Override
@@ -61,6 +65,7 @@ public class UIChat extends JFrame {
                     System.out.println("Cerrando la aplicación...");
                     System.exit(0); // Cierra la aplicación
                 }
+
             }
         });
 
@@ -73,9 +78,13 @@ public class UIChat extends JFrame {
 
                 // envío de datos al servidor
                 try {
+
                     output.write(entrada_teclado.getBytes());
+
                 } catch (IOException ex) {
+
                     throw new RuntimeException(ex);
+
                 }
 
                 añadirTexto(entrada_teclado);

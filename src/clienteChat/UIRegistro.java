@@ -51,37 +51,40 @@ public class UIRegistro extends JFrame {
                     String contraseña = campo_contraseña.getText();
 
                     try {
-
                         if (intentos >= 0) {
+                            // Envío de datos al servidor con un separador
+                            output.write((nombre + "\n" + contraseña + "\n").getBytes());
 
-                            //envio de datos al servidor
-                            output.write(nombre.getBytes());
-                            output.write(contraseña.getBytes());
+                            // Espera la respuesta del servidor
+                            int respuesta = input.read();
+                            System.out.println(respuesta);
 
-                            //tras eso espera la respuesta del servidor
-                            int respuesta = input.read(buffer);
+                            if (respuesta == 53) {
 
-                            if (respuesta == 200) {
+                                System.out.println("\n---------------------------------------------\n");
+                                System.out.println("CREDENCIALES ACEPTADAS POR EL SERVIDOR");
+                                System.out.println("\n---------------------------------------------\n");
 
-                                Main.lanzarChat(clienteSocket,input,output);
+                                Main.lanzarChat(clienteSocket, input, output);
 
                             } else {
 
                                 --intentos;
-                                JOptionPane.showMessageDialog(pulsa_registro, "Error no esta registrada la contraseña o el usuario en el servidor");
+                                JOptionPane.showMessageDialog(pulsa_registro, "Error: Usuario o contraseña incorrectos");
 
                             }
-
                         } else {
 
-                            JOptionPane.showMessageDialog(pulsa_registro, "Error ha alcanzado el maximo de intentos");
+                            JOptionPane.showMessageDialog(pulsa_registro, "Error: Ha alcanzado el máximo de intentos");
                             campo_contraseña.enable(false);
                             campo_nombre.enable(false);
 
                         }
 
                     } catch (IOException ex) {
+
                         throw new RuntimeException(ex);
+
                     }
 
                 }
