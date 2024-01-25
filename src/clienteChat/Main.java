@@ -14,6 +14,14 @@ public class Main {
     public static void main(String[] args) {
         try {
 
+            UIChat UI = new UIChat();
+
+            UI.setContentPane(UI.panel_chat);
+            UI.setTitle("Chat conectado");
+            UI.setSize(700,600);
+            UI.setVisible(true);
+            UI.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
             Socket clienteSocket = new Socket(ipServer, puertoServer);
             InputStream input = clienteSocket.getInputStream();
             OutputStream output = clienteSocket.getOutputStream();
@@ -29,10 +37,12 @@ public class Main {
         }catch (IOException e) {
 
             JOptionPane.showMessageDialog(
+
                     null,                // Componente padre (null para un cuadro de diálogo independiente)
                     "Error al conectarse al servidor\n\nReinicie el programa y intentelo de nuevo",  // Mensaje a mostrar
                     "Error de conexión",       // Título del cuadro de diálogo
                     JOptionPane.INFORMATION_MESSAGE   // Tipo de mensaje (puede ser ERROR_MESSAGE, WARNING_MESSAGE, etc.)
+
             );
 
         }
@@ -49,7 +59,7 @@ public class Main {
         hiloLanzable.start();
 
         UI.setContentPane(UI.panel_chat);
-        UI.setTitle("Entrada chat");
+        UI.setTitle("Chat conectado");
         UI.setSize(300,400);
         UI.setVisible(true);
         UI.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

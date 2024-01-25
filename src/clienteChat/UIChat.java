@@ -1,12 +1,16 @@
 package clienteChat;
 
 import javax.swing.*;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.Socket;
+
 
 public class UIChat extends JFrame{
 
     public JPanel panel_chat;
+    private JTextField entrada_texto;
+    private JButton boton_enviar;
+    private JTextPane panel_texto;
+    private JList listado_usuarios;
+    private JFormattedTextField TextField_usuario;
+    private JFormattedTextField conectadoFormattedTextField;
 
 }
