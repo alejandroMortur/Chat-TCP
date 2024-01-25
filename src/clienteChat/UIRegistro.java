@@ -1,12 +1,7 @@
 package clienteChat;
 
 //imports clase swing
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JTextField;
-import javax.swing.JOptionPane;
+import javax.swing.*;
 
 //imports eventos
 import java.awt.event.ActionEvent;
@@ -27,6 +22,7 @@ public class UIRegistro extends JFrame {
     private JTextField campo_nombre;
     private JLabel etiqueta_contraseña;
     private JTextField campo_contraseña;
+    private JLabel etiqueta_inicio_sesion;
 
     //-------variables locales:---------
     private String ipServer = null;
@@ -39,6 +35,9 @@ public class UIRegistro extends JFrame {
     private int intentos = 3;
 
     public UIRegistro(Socket clienteSocket,InputStream input,OutputStream output) {
+
+        campo_contraseña.enable(true);
+        campo_nombre.enable(true);
 
         this.clienteSocket = clienteSocket;
         this.input = input;
@@ -64,7 +63,6 @@ public class UIRegistro extends JFrame {
 
                             if (respuesta == 200) {
 
-
                                 Main.lanzarChat(clienteSocket,input,output);
 
                             } else {
@@ -77,6 +75,8 @@ public class UIRegistro extends JFrame {
                         } else {
 
                             JOptionPane.showMessageDialog(pulsa_registro, "Error ha alcanzado el maximo de intentos");
+                            campo_contraseña.enable(false);
+                            campo_nombre.enable(false);
 
                         }
 
@@ -89,5 +89,6 @@ public class UIRegistro extends JFrame {
             });
 
     }
+
 
 }
