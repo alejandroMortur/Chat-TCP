@@ -1,6 +1,9 @@
 package servidorChat;
 
+//imports io
 import java.io.IOException;
+
+//import sockets
 import java.net.ServerSocket;
 import java.net.Socket;
 

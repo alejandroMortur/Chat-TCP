@@ -1,7 +1,7 @@
 package clienteChat;
 
 //imports lectura entrada y salida
-import javax.swing.*;
+import javax.swing.JOptionPane;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -79,7 +79,11 @@ public class Hilocliente implements Runnable{
 
                     }
 
-                } catch (IOException e) {}
+                } catch (IOException e) {
+
+                    System.out.println("Error: "+e);
+
+                }
 
             }
 

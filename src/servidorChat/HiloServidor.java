@@ -1,9 +1,15 @@
 package servidorChat;
 
-import java.io.*;
+//imports IO
+import java.io.BufferedReader;
+import java.io.PrintWriter;
+import java.io.InputStreamReader;
+import java.io.IOException;
+import java.io.FileReader;
+
+//imports socket
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
+
 
 public class HiloServidor implements Runnable {
 
@@ -13,9 +19,9 @@ public class HiloServidor implements Runnable {
     private final Socket clienteSocket;
     private BufferedReader lector;
     private PrintWriter escritor;
-    private static final List<HiloServidor> clientesConectados = new ArrayList<>();
 
     public HiloServidor(Socket clienteSocket) {
+
         this.clienteSocket = clienteSocket;
 
         try {
@@ -41,12 +47,14 @@ public class HiloServidor implements Runnable {
 
             if (nombreCliente != null && buscarPalabraEnArchivo(archivo, nombreCliente)) {
 
-                System.out.println("usuario encontrado");
+                System.out.println("\n---------------------------------------------------------\n");
+                System.out.println("\nUsuario encontrado: "+nombreCliente);
 
                 // Enviar respuesta positiva al cliente
                 if(contraseñaCliente != null && buscarPalabraEnArchivo(archivo,contraseñaCliente)){
 
-                    System.out.println("contraseña encontrada");
+                    System.out.println("\nContraseña encontrada: "+contraseñaCliente);
+                    System.out.println("\n-------------------------------------------------------\n");
 
                     escritor.println(50);
                     System.out.println("\n---------------------------------------------------------------------\n");
@@ -57,9 +65,9 @@ public class HiloServidor implements Runnable {
 
             } else {
 
-                System.out.println("\n---------------------------------------------\n");
+                System.out.println("\n-------------------------------------------------------------------------\n");
                 System.out.println("EL usuario: "+nombreCliente+" con la contraseña: "+contraseñaCliente+" no se ha encontrado en el servidor");
-                System.out.println("\n---------------------------------------------\n");
+                System.out.println("\n-------------------------------------------------------------------------\n");
 
                 // Enviar respuesta negativa al cliente
                 escritor.println(0);
@@ -68,20 +76,9 @@ public class HiloServidor implements Runnable {
 
             }
 
-            // Agregar el hilo del cliente a la lista
-            clientesConectados.add(this);
-
             // Bucle para escuchar al cliente y manejar su desconexión
             while (true) {
-                String mensaje = lector.readLine();
-                if (mensaje == null) {
 
-                    // El cliente se ha desconectado, salir del bucle
-                    break;
-
-                }
-
-                // Leer mensajes del cliente y reenviarlos a todos los clientes
 
             }
 

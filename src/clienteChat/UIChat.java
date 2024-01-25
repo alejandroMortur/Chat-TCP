@@ -1,7 +1,15 @@
 package clienteChat;
 
 //imports swing
-import javax.swing.*;
+import javax.swing.JPanel;
+import javax.swing.JFrame;
+import javax.swing.JTextField;
+import javax.swing.JButton;
+import javax.swing.JTextPane;
+import javax.swing.JList;
+import javax.swing.DefaultListModel;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 
 //imports listas
 import javax.swing.text.BadLocationException;
@@ -41,13 +49,14 @@ public class UIChat extends JFrame {
         listado_usuarios = new JList<>(modelo_lista_usuarios);
 
         setEventos();
+
     }
 
     //metodo que setea los eventos de la interfaz
     public void setEventos() {
 
         System.out.println("\n---------------------------------------------\n");
-        System.out.println("INTERFAZ LANZADA");
+        System.out.println("INTERFAZ CHAT LANZADA");
         System.out.println("\n---------------------------------------------\n");
 
         //evento cerrar ventana

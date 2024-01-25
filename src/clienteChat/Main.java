@@ -18,6 +18,7 @@ public class Main {
     private static UIChat UI = null;
 
     public static void main(String[] args) {
+
         try {
 
             //socket y entradas/salidas
@@ -44,6 +45,8 @@ public class Main {
                     JOptionPane.INFORMATION_MESSAGE   // Tipo de mensaje (puede ser ERROR_MESSAGE, WARNING_MESSAGE, etc.)
 
             );
+
+            System.out.println("Error: "+e);
 
         }
 
@@ -79,7 +82,7 @@ public class Main {
 
         } catch (InterruptedException e) {
 
-            throw new RuntimeException(e);
+            System.out.println("Error: "+e);
 
         }
 

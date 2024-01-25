@@ -1,7 +1,13 @@
 package clienteChat;
 
 //imports clase swing
-import javax.swing.*;
+import javax.swing.JPanel;
+import javax.swing.JFrame;
+import javax.swing.JTextField;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
 
 //imports eventos
 import java.awt.event.ActionEvent;
@@ -53,15 +59,19 @@ public class UIRegistro extends JFrame {
                     if(comprobarEntrada(nombre) && comprobarEntrada(contraseña)){
 
                         try {
+
                             if (intentos >= 0) {
                                 // Envío de datos al servidor con un separador
                                 output.write((nombre + "\n" + contraseña + "\n").getBytes());
 
                                 // Espera la respuesta del servidor
                                 int respuesta = input.read();
-                                System.out.println(respuesta);
 
                                 if (respuesta == 53) {
+
+                                    //limpieza de campos
+                                    campo_contraseña.setText("");
+                                    campo_nombre.setText("");
 
                                     System.out.println("\n---------------------------------------------\n");
                                     System.out.println("CREDENCIALES ACEPTADAS POR EL SERVIDOR");
@@ -73,25 +83,40 @@ public class UIRegistro extends JFrame {
 
                                     --intentos;
                                     JOptionPane.showMessageDialog(pulsa_registro, "Error: Usuario o contraseña incorrectos");
+                                    System.out.println("\n---------------------------------------------\n");
+                                    System.out.println("CREDENCIALES NO ACEPTADAS POR EL SERVIDOR");
+                                    System.out.println("\n---------------------------------------------\n");
 
                                 }
+
                             } else {
 
                                 JOptionPane.showMessageDialog(pulsa_registro, "Error: Ha alcanzado el máximo de intentos");
+                                System.out.println("\n---------------------------------------------\n");
+                                System.out.println("BLOQUEO INTERFAZ LOGIN POR EXCESO DE INTENTOS");
+                                System.out.println("\n---------------------------------------------\n");
+
+                                //limpieza y bloqueo de campos
                                 campo_contraseña.enable(false);
                                 campo_nombre.enable(false);
+                                campo_contraseña.setText("");
+                                campo_nombre.setText("");
 
                             }
 
                         } catch (IOException ex) {
 
-                            throw new RuntimeException(ex);
+                            System.out.println("Error: "+e);
 
                         }
 
                     }else{
 
                         JOptionPane.showMessageDialog(pulsa_registro, "Error: El nombre de usuario y contraseña debem tener una letra mayuscula");
+
+                        //limpiado de campos
+                        campo_contraseña.setText("");
+                        campo_nombre.setText("");
 
                     }
 
@@ -107,10 +132,15 @@ public class UIRegistro extends JFrame {
         if(!entrada.isBlank()){
 
             for (char caracter : entrada.toCharArray()) {
+
                 if (Character.isUpperCase(caracter)) {
+
                     return true; // La cadena tiene al menos una letra mayúscula
+
                 }
+
             }
+
             return false; // La cadena no tiene letras mayúsculas
 
         }else{
@@ -120,6 +150,5 @@ public class UIRegistro extends JFrame {
         }
 
     }
-
 
 }
