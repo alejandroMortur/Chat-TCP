@@ -97,6 +97,7 @@ public class UIRegistro extends JFrame {
 
                                 --intentos;
                                 JOptionPane.showMessageDialog(pulsa_registro, "Error: Usuario o contraseña incorrectos");
+
                                 System.out.println("\n---------------------------------------------\n");
                                 System.out.println("CREDENCIALES NO ACEPTADAS POR EL SERVIDOR");
                                 System.out.println("\n---------------------------------------------\n");
@@ -106,9 +107,11 @@ public class UIRegistro extends JFrame {
                         } else {
 
                             JOptionPane.showMessageDialog(pulsa_registro, "Error: Ha alcanzado el máximo de intentos");
+
                             System.out.println("\n---------------------------------------------\n");
                             System.out.println("BLOQUEO INTERFAZ LOGIN POR EXCESO DE INTENTOS");
                             System.out.println("\n---------------------------------------------\n");
+
                             //limpieza y bloqueo de campos
                             campo_contraseña.setEnabled(false);
                             campo_nombre.setEnabled(false);

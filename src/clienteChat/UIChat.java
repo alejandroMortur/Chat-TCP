@@ -5,10 +5,9 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.StyledDocument;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
-import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
+import java.util.Objects;
 
 public class UIChat extends JFrame {
 
@@ -16,8 +15,9 @@ public class UIChat extends JFrame {
     private InetAddress group;
     private final int multicastPort;
     public JPanel panel_chat;
-    protected JTextField entrada_texto;
-    protected JButton boton_enviar;
+    private JTextField entrada_texto;
+    private String texto = "";
+    private JButton boton_enviar;
     private JTextPane panel_texto;
     private JList<String> listado_usuarios;
     private final DefaultListModel<String> modelo_lista_usuarios;
@@ -48,7 +48,17 @@ public class UIChat extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                botonEnviarActionPerformed(e);
+                texto = entrada_texto.getText();
+                if(!Objects.equals(texto, "") && texto != null){
+
+                    añadirTexto(texto);
+                    entrada_texto.setText(""); // Limpiar el campo de entrada
+
+                }else{
+
+                    texto = "";
+
+                }
 
             }
 
@@ -61,22 +71,11 @@ public class UIChat extends JFrame {
         StyledDocument doc = panel_texto.getStyledDocument();
         try {
 
-            doc.insertString(doc.getLength(), nombre + ": " + texto + "\n", null);
+            doc.insertString(doc.getLength(), nombre + ": " + texto + "\n\n", null);
 
         } catch (BadLocationException e) {
 
             System.out.println("Error al añadir texto: " + e);
-
-        }
-
-    }
-
-    public void botonEnviarActionPerformed(ActionEvent e) {
-
-        String mensaje = entrada_texto.getText();
-        if(mensaje != "" && mensaje != null){
-
-            entrada_texto.setText(""); // Limpiar el campo de entrada
 
         }
 
