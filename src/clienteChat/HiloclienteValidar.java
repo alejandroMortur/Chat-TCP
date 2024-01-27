@@ -1,23 +1,21 @@
 package clienteChat;
 
 //imports lectura entrada y salida
-import javax.swing.JOptionPane;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
 //import sockets
 import java.net.Socket;
 
-public class Hilocliente implements Runnable{
+public class HiloclienteValidar implements Runnable{
 
     private UIChat UIChat = null;
     private Socket clienteSocket = null;
     private boolean enChat = true;
 
-    public Hilocliente(UIChat UIChat, Socket clienteSocket){
+    public HiloclienteValidar(UIChat UIChat, Socket clienteSocket){
 
         this.UIChat = UIChat;
         this.clienteSocket = clienteSocket;
@@ -26,6 +24,7 @@ public class Hilocliente implements Runnable{
 
     @Override
     public void run() {
+
         try {
 
             // Obtener el flujo de entrada del cliente

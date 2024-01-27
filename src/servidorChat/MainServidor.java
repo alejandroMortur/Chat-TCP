@@ -28,6 +28,8 @@ public class MainServidor {
             InetAddress group = InetAddress.getByName(MULTICAST_ADDRESS);
             MulticastSocket multicastSocket = new MulticastSocket();
 
+            System.out.println("Servidor de chat iniciado. Esperando mensajes multicast...");
+
             // Unirse al grupo multicast
             multicastSocket.joinGroup(group);
 

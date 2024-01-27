@@ -16,6 +16,11 @@ public class HiloServidor implements Runnable {
     private MulticastSocket multicastSocket;
     private InetAddress group;
     private int puertoMulticast;
+    private byte[] buffer = new byte[1024];
+    private static String nombreCliente = "";
+
+    private final int puerto = 12345;
+    private final String grupoMulticast = "239.0.0.1";
     private static String archivo = "./src/servidorChat/usuarios.txt";
 
     public HiloServidor(Socket socket, MulticastSocket multicastSocket, InetAddress group, int puertoMulticast) {
@@ -35,7 +40,7 @@ public class HiloServidor implements Runnable {
             PrintWriter escritor = new PrintWriter(socketCliente.getOutputStream(), true);
 
             // Autenticación del cliente (puedes modificar esta parte según tus necesidades)
-            String nombreCliente = lector.readLine();
+            nombreCliente = lector.readLine();
             String contraseñaCliente = lector.readLine();
 
             if (nombreCliente != null && buscarCredencialesEnArchivo(archivo, nombreCliente,contraseñaCliente) &&
@@ -54,13 +59,6 @@ public class HiloServidor implements Runnable {
                 System.out.println("\n---------------------------------------------------------\n");
                 System.out.println("\nUsuario conectado: " + nombreCliente + " correctamente");
                 System.out.println("\n---------------------------------------------------------\n");
-
-                String mensaje;
-                while ((mensaje = lector.readLine()) != null) {
-
-                    enviarMensajeMulticast(mensaje, multicastSocket, group, puertoMulticast);
-
-                }
 
             } else {
 
@@ -103,21 +101,6 @@ public class HiloServidor implements Runnable {
         }
 
         return false;
-
-    }
-    public static void enviarMensajeMulticast(String mensaje, MulticastSocket multicastSocket, InetAddress group, int puerto) {
-
-        try {
-
-            byte[] data = mensaje.getBytes();
-            DatagramPacket packet = new DatagramPacket(data, data.length, group, puerto);
-            multicastSocket.send(packet);
-
-        } catch (IOException e) {
-
-            System.out.println("Error: "+e);
-
-        }
 
     }
 

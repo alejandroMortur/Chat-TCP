@@ -44,7 +44,7 @@
         <properties>
           <background color="-11447983"/>
           <editable value="false"/>
-          <enabled value="true"/>
+          <enabled value="false"/>
           <font name="Courier 10 Pitch" size="20"/>
           <foreground color="-1"/>
         </properties>
@@ -57,8 +57,11 @@
         </constraints>
         <properties>
           <background color="-11447983"/>
+          <enabled value="false"/>
           <font name="Courier 10 Pitch" size="20" style="0"/>
           <foreground color="-1"/>
+          <selectionBackground color="-1"/>
+          <selectionForeground color="-1"/>
         </properties>
       </component>
       <vspacer id="156b7">

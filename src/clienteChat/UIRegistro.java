@@ -1,12 +1,7 @@
 package clienteChat;
 
 //imports clase swing
-import javax.swing.JPanel;
-import javax.swing.JFrame;
-import javax.swing.JTextField;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
+import javax.swing.*;
 
 //imports eventos
 import java.awt.event.ActionEvent;
@@ -21,7 +16,6 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
-import java.net.DatagramPacket;
 
 public class UIRegistro extends JFrame {
     public JPanel panel_Registro;
@@ -29,8 +23,9 @@ public class UIRegistro extends JFrame {
     private JLabel etiqueta_nombre;
     private JTextField campo_nombre;
     private JLabel etiqueta_contraseña;
-    private JTextField campo_contraseña;
     private JLabel etiqueta_inicio_sesion;
+    private JCheckBox mostrarContraseña;
+    private JPasswordField campo_contraseña;
 
     //-------variables locales:---------
     private Socket clienteSocket = null;
@@ -43,6 +38,28 @@ public class UIRegistro extends JFrame {
         this.input = input;
         this.output = output;
 
+        // ActionListener para la casilla de verificación
+        // ActionListener para la casilla de verificación
+        mostrarContraseña.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                // Verificar si la casilla de verificación está marcada
+                if (mostrarContraseña.isSelected()) {
+
+                    // Si está marcada, mostrar el campo de contraseña como un JTextField
+                    campo_contraseña.setEchoChar((char) 0); // Mostrar caracteres
+
+                } else {
+
+                    // Si no está marcada, mostrar el campo de contraseña como un JPasswordField
+                    campo_contraseña.setEchoChar('*'); // Ocultar caracteres
+
+                }
+
+            }
+
+        });
         pulsa_registro.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
