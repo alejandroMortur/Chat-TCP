@@ -1,39 +1,29 @@
 package servidorChat;
 
-//imports IO
 import java.io.BufferedReader;
 import java.io.PrintWriter;
 import java.io.InputStreamReader;
 import java.io.IOException;
 import java.io.FileReader;
-
-//imports socket
+import java.net.DatagramPacket;
+import java.net.InetAddress;
+import java.net.MulticastSocket;
 import java.net.Socket;
-
 
 public class HiloServidor implements Runnable {
 
-    private String archivo = "./src/servidorChat/usuarios.txt";
-    private String nombreCliente = "";
-    private String contraseñaCliente = "";
-    private final Socket clienteSocket;
-    private BufferedReader lector;
-    private PrintWriter escritor;
+    private Socket socketCliente;
+    private MulticastSocket multicastSocket;
+    private InetAddress group;
+    private int puertoMulticast;
+    private static String archivo = "./src/servidorChat/usuarios.txt";
 
-    public HiloServidor(Socket clienteSocket) {
+    public HiloServidor(Socket socket, MulticastSocket multicastSocket, InetAddress group, int puertoMulticast) {
 
-        this.clienteSocket = clienteSocket;
-
-        try {
-
-            lector = new BufferedReader(new InputStreamReader(clienteSocket.getInputStream()));
-            escritor = new PrintWriter(clienteSocket.getOutputStream(), true);
-
-        } catch (IOException e) {
-
-            e.printStackTrace();
-
-        }
+        this.socketCliente = socket;
+        this.multicastSocket = multicastSocket;
+        this.group = group;
+        this.puertoMulticast = puertoMulticast;
 
     }
 
@@ -41,76 +31,68 @@ public class HiloServidor implements Runnable {
     public void run() {
         try {
 
-            // Autenticación del cliente (puedes modificar esta parte según tus necesidades)
-            nombreCliente = lector.readLine();
-            contraseñaCliente = lector.readLine();
+            BufferedReader lector = new BufferedReader(new InputStreamReader(socketCliente.getInputStream()));
+            PrintWriter escritor = new PrintWriter(socketCliente.getOutputStream(), true);
 
-            if (nombreCliente != null && buscarPalabraEnArchivo(archivo, nombreCliente)) {
+            // Autenticación del cliente (puedes modificar esta parte según tus necesidades)
+            String nombreCliente = lector.readLine();
+            String contraseñaCliente = lector.readLine();
+
+            if (nombreCliente != null && buscarCredencialesEnArchivo(archivo, nombreCliente,contraseñaCliente) &&
+                    contraseñaCliente != null) {
 
                 System.out.println("\n---------------------------------------------------------\n");
-                System.out.println("\nUsuario encontrado: "+nombreCliente);
+                System.out.println("\nUsuario autenticado: " + nombreCliente);
+                System.out.println("\nContraseña correcta: " + contraseñaCliente);
+                System.out.println("\n---------------------------------------------------------\n");
 
-                // Enviar respuesta positiva al cliente
-                if(contraseñaCliente != null && buscarPalabraEnArchivo(archivo,contraseñaCliente)){
+                escritor.println("Autenticación exitosa");
+                // Aquí puedes implementar la lógica para manejar el chat entre los usuarios autenticados
 
-                    System.out.println("\nContraseña encontrada: "+contraseñaCliente);
-                    System.out.println("\n-------------------------------------------------------\n");
+                escritor.write(50);
 
-                    escritor.println(50);
-                    System.out.println("\n---------------------------------------------------------------------\n");
-                    System.out.println("EL usuario: "+nombreCliente+" se ha registrado correctamente con la contraseña: "+contraseñaCliente);
-                    System.out.println("\n---------------------------------------------------------------------\n");
+                System.out.println("\n---------------------------------------------------------\n");
+                System.out.println("\nUsuario conectado: " + nombreCliente + " correctamente");
+                System.out.println("\n---------------------------------------------------------\n");
+
+                String mensaje;
+                while ((mensaje = lector.readLine()) != null) {
+
+                    enviarMensajeMulticast(mensaje, multicastSocket, group, puertoMulticast);
 
                 }
 
             } else {
 
-                System.out.println("\n-------------------------------------------------------------------------\n");
-                System.out.println("EL usuario: "+nombreCliente+" con la contraseña: "+contraseñaCliente+" no se ha encontrado en el servidor");
-                System.out.println("\n-------------------------------------------------------------------------\n");
+                System.out.println("\n---------------------------------------------------------\n");
+                System.out.println("\nError de autenticación para el usuario: " + nombreCliente);
+                System.out.println("\n---------------------------------------------------------\n");
 
-                // Enviar respuesta negativa al cliente
-                escritor.println(0);
-
-                return;
-
+                escritor.println("Error de autenticación");
             }
 
-            // Bucle para escuchar al cliente y manejar su desconexión
-            while (true) {
-
-
-            }
+            // Cerrar la conexión con el cliente
+            socketCliente.close();
 
         } catch (IOException e) {
 
-            e.printStackTrace();
-
-        } finally {
-
-            try {
-
-                clienteSocket.close();
-
-            } catch (IOException e) {
-
-                e.printStackTrace();
-
-            }
+            System.out.println("Error: "+e);
 
         }
 
     }
 
-    public static boolean buscarPalabraEnArchivo(String nombreArchivo, String palabra) throws IOException {
+    public static boolean buscarCredencialesEnArchivo(String nombreArchivo, String nombreUsuario, String contraseñaUsuario) throws IOException {
 
         try (BufferedReader br = new BufferedReader(new FileReader(nombreArchivo))) {
 
             String linea;
-
             while ((linea = br.readLine()) != null) {
 
-                if (linea.contains(palabra)) {
+                // Dividir la línea en usuario y contraseña
+                String[] partes = linea.split(" ");
+
+                if (partes.length == 2 && partes[0].equals(nombreUsuario) && partes[1].equals(contraseñaUsuario)) {
 
                     return true;
 
@@ -121,6 +103,21 @@ public class HiloServidor implements Runnable {
         }
 
         return false;
+
+    }
+    public static void enviarMensajeMulticast(String mensaje, MulticastSocket multicastSocket, InetAddress group, int puerto) {
+
+        try {
+
+            byte[] data = mensaje.getBytes();
+            DatagramPacket packet = new DatagramPacket(data, data.length, group, puerto);
+            multicastSocket.send(packet);
+
+        } catch (IOException e) {
+
+            System.out.println("Error: "+e);
+
+        }
 
     }
 

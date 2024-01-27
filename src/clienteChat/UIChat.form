@@ -20,7 +20,8 @@
         </constraints>
         <properties>
           <background color="-13027015"/>
-          <foreground color="-11447983"/>
+          <font name="Courier 10 Pitch" size="20" style="0"/>
+          <foreground color="-1"/>
         </properties>
       </component>
       <component id="82cc8" class="javax.swing.JButton" binding="boton_enviar">
@@ -42,7 +43,10 @@
         </constraints>
         <properties>
           <background color="-11447983"/>
-          <foreground color="-13027015"/>
+          <editable value="false"/>
+          <enabled value="true"/>
+          <font name="Courier 10 Pitch" size="20"/>
+          <foreground color="-1"/>
         </properties>
       </component>
       <component id="6ac19" class="javax.swing.JList" binding="listado_usuarios">
@@ -53,7 +57,8 @@
         </constraints>
         <properties>
           <background color="-11447983"/>
-          <foreground color="-13027015"/>
+          <font name="Courier 10 Pitch" size="20" style="0"/>
+          <foreground color="-1"/>
         </properties>
       </component>
       <vspacer id="156b7">

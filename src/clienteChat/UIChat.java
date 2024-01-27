@@ -23,34 +23,47 @@ import java.awt.event.WindowEvent;
 
 //imports lectura entrada y salida
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.net.DatagramPacket;
+import java.net.InetAddress;
+import java.net.MulticastSocket;
 
 public class UIChat extends JFrame {
 
-    public JPanel panel_chat;
-
-    private InputStream input = null;
-    private OutputStream output = null;
+    private final MulticastSocket multicastSocket;
+    private InetAddress group;
+    private final int multicastPort;
+    public  JPanel panel_chat;
     private JTextField entrada_texto;
     private JButton boton_enviar;
     private JTextPane panel_texto;
     private JList<String> listado_usuarios;
-    private DefaultListModel<String> modelo_lista_usuarios;
+    private final DefaultListModel<String> modelo_lista_usuarios;
     private JLabel etiqueta_conectado;
     private JLabel etiqueta_usuario;
+    private String nombre = "";
+    private DefaultListModel<String> modelo;
 
-    public UIChat(InputStream input, OutputStream output) {
+    public UIChat(MulticastSocket multicastSocket, InetAddress group, int multicastPort, String nombre) {
 
-        this.input = input;
-        this.output = output;
+        this.multicastSocket = multicastSocket;
+        this.group = group;
+        this.multicastPort = multicastPort;
+        this.nombre = nombre;
 
+        // Inicializar el modelo de lista de usuarios
         modelo_lista_usuarios = new DefaultListModel<>();
-        listado_usuarios = new JList<>(modelo_lista_usuarios);
+        listado_usuarios.setModel(modelo_lista_usuarios); // Inicializar listado_usuarios
 
+        añadirTextoListadoUsuario(nombre);
+
+        // Inicializar el componente etiqueta_usuario con el nombre de usuario
+        etiqueta_usuario.setText("Usuario: " + nombre);
+
+        // Llamar al método para configurar eventos
         setEventos();
 
     }
+
 
     //metodo que setea los eventos de la interfaz
     public void setEventos() {
@@ -71,8 +84,10 @@ public class UIChat extends JFrame {
                         JOptionPane.YES_NO_OPTION);
 
                 if (option == JOptionPane.YES_OPTION) {
+
                     System.out.println("Cerrando la aplicación...");
                     System.exit(0); // Cierra la aplicación
+
                 }
 
             }
@@ -85,34 +100,57 @@ public class UIChat extends JFrame {
 
                 String entrada_teclado = entrada_texto.getText();
 
-                // envío de datos al servidor
-                try {
-
-                    output.write(entrada_teclado.getBytes());
-
-                } catch (IOException ex) {
-
-                    throw new RuntimeException(ex);
-
-                }
-
                 añadirTexto(entrada_teclado);
+
             }
+
         });
+
     }
 
     //-------------------------------------------------------
     //metodo para añadir texto en la interfaz de mensajes
     public void añadirTexto(String texto) {
+
         StyledDocument doc = panel_texto.getStyledDocument();
 
         try {
 
-            doc.insertString(doc.getLength(), texto + "\n", null);
+            doc.insertString(doc.getLength(),nombre+": " + texto + "\n", null);
 
         } catch (BadLocationException e) {
 
-            e.printStackTrace();
+            System.out.println("Error: "+e);
+
+        }
+
+    }
+    // Método para enviar un mensaje al grupo multicast
+    public void enviarMensajeMulticast(String mensaje) {
+
+        try {
+
+            byte[] data = mensaje.getBytes();
+            DatagramPacket packet = new DatagramPacket(data, data.length, group, multicastPort);
+            multicastSocket.send(packet);
+
+        } catch (IOException e) {
+
+            System.out.println("Error: "+e);
+
+        }
+
+    }
+
+    // Método que se llama cuando se hace clic en el botón de enviar
+    public void botonEnviarActionPerformed(ActionEvent e) {
+
+        if(entrada_texto.getText() != null && entrada_texto.getText() != ""){
+
+            String mensaje = entrada_texto.getText();
+            añadirTexto(mensaje); // Agregar el mensaje al panel de texto
+            enviarMensajeMulticast(mensaje); // Enviar el mensaje al grupo multicast
+            entrada_texto.setText(""); // Limpiar el campo de entrada
 
         }
 
@@ -121,8 +159,9 @@ public class UIChat extends JFrame {
     //metodo añadir texto en el panel de usuarios
     public void añadirTextoListadoUsuario(String texto) {
 
-        // Añadir el texto al modelo de lista
-        modelo_lista_usuarios.addElement(texto);
+        DefaultListModel modelo = (DefaultListModel) listado_usuarios.getModel();
+
+        modelo.addElement("\n"+nombre+"\n");
 
     }
 
