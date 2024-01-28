@@ -1,26 +1,27 @@
 package clienteChat;
 
 //imports lectura entrada y salida
-
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.InetAddress;
-import java.net.MulticastSocket;
-import java.net.Socket;
-import java.net.UnknownHostException;
+import java.net.*;
+
 
 public class HiloclienteUIChat implements Runnable{
 
     private UIChat UIChat = null;
     private static boolean enChat = true;
-    private static final String ipMulticast = "239.0.0.1";
-    private static int multicastPort = 12345;
+    private static byte[] buffer = new byte[1024];
 
-    public HiloclienteUIChat(UIChat UIChat){
+    private MulticastSocket redBroadcast = null;
+
+    private static String MULTICAST_ADDRESS;
+    private static int MULTICAST_PORT;
+
+    public HiloclienteUIChat(UIChat UIChat, MulticastSocket redBroadcast,String ipMulticast,int multicastPort){
 
         this.UIChat = UIChat;
+        this.redBroadcast = redBroadcast;
+        this.MULTICAST_ADDRESS = ipMulticast;
+        this.MULTICAST_PORT = multicastPort;
 
     }
 
@@ -29,12 +30,29 @@ public class HiloclienteUIChat implements Runnable{
 
         try {
 
-            InetAddress group = InetAddress.getByName(ipMulticast);
-            MulticastSocket multicastSocket = new MulticastSocket(multicastPort);
-            multicastSocket.joinGroup(group);
+            byte[] buffer = new byte[4086];
+            boolean mensajeRecibido = false;
 
             while (enChat){
 
+                //recibir información
+                DatagramPacket paqueteRebote = new DatagramPacket(buffer, buffer.length, InetAddress.getByName(MULTICAST_ADDRESS), MULTICAST_PORT);
+                redBroadcast.receive(paqueteRebote);
+
+                if (!mensajeRecibido) {
+
+                    String mensaje = new String(paqueteRebote.getData(), 0, paqueteRebote.getLength());
+                    System.out.println("Información recibida de: " + paqueteRebote.getAddress() + ", mensaje: " + mensaje + " \n");
+
+                    UIChat.añadirTexto(mensaje);
+
+                    mensajeRecibido = true;
+
+                }else {
+
+                    mensajeRecibido = false;
+
+                }
 
             }
 

@@ -1,22 +1,27 @@
 package clienteChat;
 
+//imports swing
 import javax.swing.*;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.StyledDocument;
+
+//import eventos
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+
+//imports io y red
+import java.io.IOException;
+import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.util.Objects;
 
 public class UIChat extends JFrame {
 
-    private final MulticastSocket multicastSocket;
-    private InetAddress group;
-    private final int multicastPort;
     public JPanel panel_chat;
     private JTextField entrada_texto;
-    private String texto = "";
     private JButton boton_enviar;
     private JTextPane panel_texto;
     private JList<String> listado_usuarios;
@@ -24,13 +29,15 @@ public class UIChat extends JFrame {
     private JLabel etiqueta_conectado;
     private JLabel etiqueta_usuario;
     private String nombre = "";
+    private String texto = "";
+    private MulticastSocket redBroadcast = null;
+    private static final String ipMulticast = "239.0.0.1";
+    private static final int multicastPort = 12345;
 
-    public UIChat(MulticastSocket multicastSocket, InetAddress group, int multicastPort, String nombre) {
+    public UIChat(String nombre, MulticastSocket redBroadcast){
 
-        this.multicastSocket = multicastSocket;
-        this.group = group;
-        this.multicastPort = multicastPort;
         this.nombre = nombre;
+        this.redBroadcast = redBroadcast;
 
         modelo_lista_usuarios = new DefaultListModel<>();
         listado_usuarios.setModel(modelo_lista_usuarios);
@@ -44,6 +51,39 @@ public class UIChat extends JFrame {
     }
 
     public void setEventos() {
+
+        this.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+
+                try {
+
+                    System.out.println("La ventana se está cerrando...");
+
+                    texto ="El usuario: " +nombre+" se ha desconectado ";
+
+                    // Crear el DatagramPacket con los datos a enviar
+                    byte [] buffer = texto.getBytes();
+                    DatagramPacket paqueteRebote = new DatagramPacket(buffer, buffer.length, InetAddress.getByName(ipMulticast), multicastPort);
+
+                    redBroadcast.send(paqueteRebote);
+
+                    //cese hilo
+                    Main.detenerhilo();
+
+                    //desconexion socket multiple
+                    redBroadcast.close();
+
+                } catch (IOException ex) {
+
+                    System.out.println("Error: "+ex);
+
+                }
+
+            }
+
+        });
+
         boton_enviar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -51,12 +91,34 @@ public class UIChat extends JFrame {
                 texto = entrada_texto.getText();
                 if(!Objects.equals(texto, "") && texto != null){
 
-                    añadirTexto(texto);
-                    entrada_texto.setText(""); // Limpiar el campo de entrada
+                    try {
 
-                }else{
+                        texto = nombre +": "+ texto;
 
-                    texto = "";
+                        // Crear el DatagramPacket con los datos a enviar
+                        byte [] buffer = texto.getBytes();
+                        DatagramPacket paqueteRebote = new DatagramPacket(buffer, buffer.length, InetAddress.getByName(ipMulticast), multicastPort);
+
+                        // Enviar el paquete a través del socket multicast
+                        redBroadcast.send(paqueteRebote);
+
+                        // Mostrar mensaje de éxito en la consola
+                        System.out.println("Mensaje: " + texto + " enviado correctamente al servidor \n");
+
+                        // Limpiar el campo de entrada
+                        entrada_texto.setText("");
+
+                    } catch (IOException ex) {
+
+                        // Manejar errores de E/S
+                        System.out.println("Error al enviar el mensaje: " + ex.getMessage());
+
+                    }
+
+                } else {
+
+                    // Manejar caso en que el texto esté vacío
+                    System.out.println("El texto está vacío");
 
                 }
 
@@ -71,7 +133,7 @@ public class UIChat extends JFrame {
         StyledDocument doc = panel_texto.getStyledDocument();
         try {
 
-            doc.insertString(doc.getLength(), nombre + ": " + texto + "\n\n", null);
+            doc.insertString(doc.getLength(), texto + "\n", null);
 
         } catch (BadLocationException e) {
 
@@ -84,7 +146,7 @@ public class UIChat extends JFrame {
     public void añadirTextoListadoUsuario(String texto) {
 
         DefaultListModel modelo = (DefaultListModel) listado_usuarios.getModel();
-        modelo.addElement("\n" + nombre + "\n");
+        modelo.addElement("\n" + nombre);
 
     }
 

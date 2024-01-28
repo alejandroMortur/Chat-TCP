@@ -1,54 +1,45 @@
 package servidorChat;
 
-//imports io
+//import io
 import java.io.IOException;
 
-//import sockets
-import java.net.InetAddress;
-import java.net.MulticastSocket;
-import java.net.ServerSocket;
-import java.net.Socket;
+//impor net
+import java.net.*;
 
 public class MainServidor {
 
     private static final int PuertoServer = 6001;
-    private static final String MULTICAST_ADDRESS = "239.0.0.1";
-    private static final int MULTICAST_PORT = 12345;
+
 
     public static void main(String args[]) {
 
         try {
-            ServerSocket serverSocket = new ServerSocket(PuertoServer);
 
+            // Esperar a que un cliente se conecte
+            ServerSocket serverSocket = new ServerSocket(PuertoServer);
             System.out.println("\n------------------------------------------\n");
             System.out.println("Servidor TCP esperando conexiones en el puerto: " + PuertoServer);
             System.out.println("\n------------------------------------------\n");
 
-            // Crear el socket multicast
-            InetAddress group = InetAddress.getByName(MULTICAST_ADDRESS);
-            MulticastSocket multicastSocket = new MulticastSocket();
-
-            System.out.println("Servidor de chat iniciado. Esperando mensajes multicast...");
-
-            // Unirse al grupo multicast
-            multicastSocket.joinGroup(group);
+            Thread hiloClienteEscuchar = new Thread(new HiloServidorEscucha());
+            hiloClienteEscuchar.start();
 
             while (true) {
 
-                // Esperar a que un cliente se conecte
                 Socket socketCliente = serverSocket.accept();
-
                 // Crear un nuevo hilo para manejar la conexión con el cliente
-                Thread hiloCliente = new Thread(new HiloServidor(socketCliente, multicastSocket, group, MULTICAST_PORT));
+                Thread hiloCliente = new Thread(new HiloServidorValidarUsuarios(socketCliente));
                 hiloCliente.start();
 
             }
 
         } catch (IOException e) {
 
-            System.out.println("Error: "+e);
+            System.out.println("Error en el servidor: " + e);
+
         }
 
     }
 
 }
+

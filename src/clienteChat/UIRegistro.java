@@ -90,8 +90,14 @@ public class UIRegistro extends JFrame {
                                 System.out.println("CREDENCIALES ACEPTADAS POR EL SERVIDOR");
                                 System.out.println("\n---------------------------------------------\n");
 
+                                //enviar mensaje confirmación conexión
+                                String mensaje = "CONNECT " + nombre;
+                                output.write(mensaje.getBytes());
+
                                 // Lanzar el chat
                                 lanzarChat(nombre);
+
+                                clienteSocket.close();
 
                             } else {
 
@@ -117,6 +123,8 @@ public class UIRegistro extends JFrame {
                             campo_nombre.setEnabled(false);
                             campo_contraseña.setText("");
                             campo_nombre.setText("");
+
+                            clienteSocket.close();
 
                         }
 
@@ -175,7 +183,7 @@ public class UIRegistro extends JFrame {
             int multicastPort = 12345;
             MulticastSocket multicastSocket = new MulticastSocket(multicastPort);
             multicastSocket.joinGroup(group);
-            Main.lanzarChat(clienteSocket, input, output, multicastSocket, group, multicastPort,nombre);
+            Main.lanzarChat(nombre);
 
         } catch (IOException e) {
 

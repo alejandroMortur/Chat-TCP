@@ -10,9 +10,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JFrame;
 
 //import sockets
-import java.net.Socket;
-import java.net.InetAddress;
-import java.net.MulticastSocket;
+import java.net.*;
 
 public class Main {
 
@@ -21,6 +19,8 @@ public class Main {
     private static final int puertoServer = 6001;
     private static UIRegistro UIRegistro = null;
     private static UIChat UI = null;
+    private static final String ipMulticast = "239.0.0.1";
+    private static final int multicastPort = 12345;
 
     public static void main(String[] args) {
 
@@ -49,19 +49,44 @@ public class Main {
     }
 
     // Método para lanzar la interfaz de chat
-    public static void lanzarChat(Socket clienteSocket, InputStream input, OutputStream output, MulticastSocket multicastSocket, InetAddress group, int multicastPort,String nombre) {
+    public static void lanzarChat(String nombre) {
+        try {
 
-        UIRegistro.dispose(); // Cerrar ventana de registro
+            // Crear un nuevo socket multicast y unirse al grupo multicast
+            MulticastSocket redBroadcast = new MulticastSocket(multicastPort);
+            InetAddress grupo = InetAddress.getByName(ipMulticast);
+            redBroadcast.joinGroup(grupo);
 
-        UI = new UIChat(multicastSocket, group, multicastPort,nombre); // Inicializar la interfaz de chat
-        UI.setContentPane(UI.panel_chat);
-        UI.setTitle("Chat online");
-        UI.setSize(700, 600);
-        UI.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        UI.setVisible(true);
+            // Cerrar la ventana de registro
+            UIRegistro.dispose();
 
-        HiloclienteUIChat hilo = new HiloclienteUIChat(UI);
-        hilo.run();
+            // Inicializar la interfaz de chat
+            UI = new UIChat(nombre, redBroadcast);
+            UI.setContentPane(UI.panel_chat);
+
+            UI.setTitle("Chat online");
+            UI.setSize(700, 600);
+            UI.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            UI.setVisible(true);
+
+            HiloclienteUIChat hiloClienteUIChat = new HiloclienteUIChat(UI, redBroadcast,ipMulticast ,multicastPort);
+            Thread hilo = new Thread(hiloClienteUIChat);
+            hilo.start();
+
+
+
+        } catch (IOException e) {
+
+            JOptionPane.showMessageDialog(null, "Error al unirse al chat: " + e.getMessage(), "Error de conexión", JOptionPane.ERROR_MESSAGE);
+            System.out.println("Error al unirse al chat: " + e.getMessage());
+
+        }
+
+    }
+
+    public static void detenerhilo(){
+
+        HiloclienteUIChat.detener();
 
     }
 

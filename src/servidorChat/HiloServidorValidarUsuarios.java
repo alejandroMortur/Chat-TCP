@@ -1,33 +1,25 @@
 package servidorChat;
 
+//imports lectura y io
 import java.io.BufferedReader;
 import java.io.PrintWriter;
 import java.io.InputStreamReader;
 import java.io.IOException;
 import java.io.FileReader;
-import java.net.InetAddress;
-import java.net.MulticastSocket;
+
+//import sockets
 import java.net.Socket;
 
-public class HiloServidor implements Runnable {
+public class HiloServidorValidarUsuarios implements Runnable {
 
     private Socket socketCliente;
-    private MulticastSocket multicastSocket;
-    private InetAddress group;
-    private int puertoMulticast;
     private byte[] buffer = new byte[1024];
     private static String nombreCliente = "";
-
-    private final int puerto = 12345;
-    private final String grupoMulticast = "239.0.0.1";
     private static String archivo = "./src/servidorChat/usuarios.txt";
 
-    public HiloServidor(Socket socket, MulticastSocket multicastSocket, InetAddress group, int puertoMulticast) {
+    public HiloServidorValidarUsuarios(Socket socket) {
 
         this.socketCliente = socket;
-        this.multicastSocket = multicastSocket;
-        this.group = group;
-        this.puertoMulticast = puertoMulticast;
 
     }
 
@@ -51,13 +43,22 @@ public class HiloServidor implements Runnable {
                 System.out.println("\n---------------------------------------------------------\n");
 
                 escritor.println("Autenticación exitosa");
-                // Aquí puedes implementar la lógica para manejar el chat entre los usuarios autenticados
 
                 escritor.write(50);
 
-                System.out.println("\n---------------------------------------------------------\n");
-                System.out.println("\nUsuario conectado: " + nombreCliente + " correctamente");
-                System.out.println("\n---------------------------------------------------------\n");
+                String mensaje = lector.readLine();
+                if (mensaje.startsWith("CONNECT")) {
+
+                    String nombreUsuario = mensaje.split(" ")[1];
+
+                    System.out.println("\n---------------------------------------------------------\n");
+                    System.out.println(mensaje+" correctamente");
+                    System.out.println("\n---------------------------------------------------------\n");
+                    // Realizar acciones para confirmar la conexión del usuario
+                }
+
+                // Cerrar la conexión con el cliente
+                socketCliente.close();
 
             } else {
 
@@ -67,9 +68,6 @@ public class HiloServidor implements Runnable {
 
                 escritor.println("Error de autenticación");
             }
-
-            // Cerrar la conexión con el cliente
-            socketCliente.close();
 
         } catch (IOException e) {
 
