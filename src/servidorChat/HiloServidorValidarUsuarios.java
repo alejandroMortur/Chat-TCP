@@ -9,6 +9,8 @@ import java.io.FileReader;
 
 //import sockets
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 
 public class HiloServidorValidarUsuarios implements Runnable {
 
@@ -16,6 +18,8 @@ public class HiloServidorValidarUsuarios implements Runnable {
     private byte[] buffer = new byte[1024];
     private static String nombreCliente = "";
     private static String archivo = "./src/servidorChat/usuarios.txt";
+
+
 
     public HiloServidorValidarUsuarios(Socket socket) {
 
@@ -50,6 +54,8 @@ public class HiloServidorValidarUsuarios implements Runnable {
                 if (mensaje.startsWith("CONNECT")) {
 
                     String nombreUsuario = mensaje.split(" ")[1];
+
+                    System.out.println(nombreUsuario);
 
                     System.out.println("\n---------------------------------------------------------\n");
                     System.out.println(mensaje+" correctamente");

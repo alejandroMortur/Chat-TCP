@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
+import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 public class UIChat extends JFrame {
@@ -34,6 +35,14 @@ public class UIChat extends JFrame {
     private static final String ipMulticast = "239.0.0.1";
     private static final int multicastPort = 12345;
 
+    private static DefaultListModel modelo = null;
+
+    public String getNombre(){
+
+        return nombre;
+
+    }
+
     public UIChat(String nombre, MulticastSocket redBroadcast){
 
         this.nombre = nombre;
@@ -42,9 +51,9 @@ public class UIChat extends JFrame {
         modelo_lista_usuarios = new DefaultListModel<>();
         listado_usuarios.setModel(modelo_lista_usuarios);
 
-        añadirTextoListadoUsuario(nombre);
-
         etiqueta_usuario.setText("Usuario: " + nombre);
+
+        modelo = (DefaultListModel) listado_usuarios.getModel();
 
         setEventos();
 
@@ -60,11 +69,13 @@ public class UIChat extends JFrame {
 
                     System.out.println("La ventana se está cerrando...");
 
-                    texto ="El usuario: " +nombre+" se ha desconectado ";
+                    String mensajeDesconectado = nombre + " esta offline   ";
+
+                    // Convertir el mensaje a bytes utilizando UTF-8
+                    byte[] bufferMensaje = mensajeDesconectado.getBytes(StandardCharsets.UTF_8);
 
                     // Crear el DatagramPacket con los datos a enviar
-                    byte [] buffer = texto.getBytes();
-                    DatagramPacket paqueteRebote = new DatagramPacket(buffer, buffer.length, InetAddress.getByName(ipMulticast), multicastPort);
+                    DatagramPacket paqueteRebote = new DatagramPacket(bufferMensaje, bufferMensaje.length, InetAddress.getByName(ipMulticast), multicastPort);
 
                     redBroadcast.send(paqueteRebote);
 
@@ -145,8 +156,40 @@ public class UIChat extends JFrame {
 
     public void añadirTextoListadoUsuario(String texto) {
 
-        DefaultListModel modelo = (DefaultListModel) listado_usuarios.getModel();
-        modelo.addElement("\n" + nombre);
+        modelo = (DefaultListModel) listado_usuarios.getModel();
+        if(!modelo.contains(texto)){
+
+            modelo.addElement("\n" + texto); // Usar el parámetro 'texto' en lugar de 'nombre'
+
+        }
+
+    }
+
+    public void eliminarUsuarioListado(String usuario) {
+
+        modelo = (DefaultListModel<String>) listado_usuarios.getModel();
+        int indiceAEliminar = -1;
+
+        for (int i = 0; i < modelo.size(); i++) {
+
+            String elemento = modelo.getElementAt(i).toString();
+            System.out.println("Lista: "+elemento);
+
+            if (elemento.equals("\n"+usuario)) {
+
+                indiceAEliminar = i;
+                break;
+
+            }
+
+        }
+
+        if (indiceAEliminar != -1) {
+
+            System.out.println("Elemento borrado");
+            modelo.remove(indiceAEliminar);
+
+        }
 
     }
 

@@ -8,11 +8,15 @@ import java.net.*;
 
 //import tratamiento strings
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 public class HiloServidorEscucha implements Runnable {
 
     private static final String MULTICAST_ADDRESS = "239.0.0.1";
     private static final int MULTICAST_PORT = 12345;
+
 
     @Override
     public void run() {
@@ -26,7 +30,7 @@ public class HiloServidorEscucha implements Runnable {
 
             System.out.println("Servidor de chat iniciado. Esperando mensajes multicast...");
 
-            byte[] buffer = new byte[4086];
+            byte[] buffer = new byte[8096];
             boolean mensajeRecibido = false;
 
             while (true) {
@@ -35,27 +39,33 @@ public class HiloServidorEscucha implements Runnable {
                 redBroadcast.receive(paquete);
 
                 if (!mensajeRecibido) {
-                    // Obtener el tamaño real de los datos recibidos
-                    int length = paquete.getLength();
-                    // Convertir los datos recibidos a un String
+
+                    int length = paquete.getLength(); // Obtener el tamaño real del mensaje recibido
                     String mensaje = new String(paquete.getData(), 0, length, StandardCharsets.UTF_8);
 
-                    if(mensaje.contains("desconectado")){
+                    if (mensaje.contains("offline")) {
 
                         System.out.println("\n-------------------------------\n");
-                        System.out.println(mensaje +"correctamente");
+                        System.out.println(mensaje);
+                        System.out.println("\n-------------------------------\n");
+
+                    }
+                    if (mensaje.contains("online")){
+
+                        System.out.println("\n-------------------------------\n");
+                        System.out.println(mensaje);
                         System.out.println("\n-------------------------------\n");
 
                     }else{
 
                         System.out.println("Información recibida de: " + paquete.getAddress() + ", mensaje: " + mensaje + " \n");
 
-                    }
+                        // Rebotar información multicast
+                        buffer = mensaje.getBytes(StandardCharsets.UTF_8);
+                        DatagramPacket paqueteRebote = new DatagramPacket(buffer, buffer.length, InetAddress.getByName(MULTICAST_ADDRESS), MULTICAST_PORT);
+                        redBroadcast.send(paqueteRebote);
 
-                    // Rebotar información multicast
-                    buffer = mensaje.getBytes(StandardCharsets.UTF_8);
-                    DatagramPacket paqueteRebote = new DatagramPacket(buffer, buffer.length, InetAddress.getByName(MULTICAST_ADDRESS), MULTICAST_PORT);
-                    redBroadcast.send(paqueteRebote);
+                    }
 
                     mensajeRecibido = true; // Marcar que se ha recibido un mensaje
 

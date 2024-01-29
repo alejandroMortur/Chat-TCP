@@ -6,10 +6,10 @@ import java.io.IOException;
 //impor net
 import java.net.*;
 
+
 public class MainServidor {
 
     private static final int PuertoServer = 6001;
-
 
     public static void main(String args[]) {
 

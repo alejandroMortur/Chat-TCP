@@ -3,18 +3,20 @@ package clienteChat;
 //imports lectura entrada y salida
 import java.io.IOException;
 import java.net.*;
+import java.nio.charset.StandardCharsets;
 
 
 public class HiloclienteUIChat implements Runnable{
 
     private UIChat UIChat = null;
     private static boolean enChat = true;
-    private static byte[] buffer = new byte[1024];
 
     private MulticastSocket redBroadcast = null;
 
     private static String MULTICAST_ADDRESS;
     private static int MULTICAST_PORT;
+
+    private static  byte[] buffer = new byte[8096];
 
     public HiloclienteUIChat(UIChat UIChat, MulticastSocket redBroadcast,String ipMulticast,int multicastPort){
 
@@ -30,19 +32,55 @@ public class HiloclienteUIChat implements Runnable{
 
         try {
 
-            byte[] buffer = new byte[4086];
             boolean mensajeRecibido = false;
+
+            String texto =UIChat.getNombre()+" esta online    ";
+
+            // Crear el DatagramPacket con los datos a enviar
+            buffer = texto.getBytes();
+            DatagramPacket paqueteRebote = new DatagramPacket(buffer, buffer.length, InetAddress.getByName(MULTICAST_ADDRESS), MULTICAST_PORT);
+
+            redBroadcast.send(paqueteRebote);
 
             while (enChat){
 
                 //recibir información
-                DatagramPacket paqueteRebote = new DatagramPacket(buffer, buffer.length, InetAddress.getByName(MULTICAST_ADDRESS), MULTICAST_PORT);
+                paqueteRebote = new DatagramPacket(buffer, buffer.length, InetAddress.getByName(MULTICAST_ADDRESS), MULTICAST_PORT);
                 redBroadcast.receive(paqueteRebote);
 
                 if (!mensajeRecibido) {
 
-                    String mensaje = new String(paqueteRebote.getData(), 0, paqueteRebote.getLength());
+                    int length = paqueteRebote.getLength(); // Obtener el tamaño real del mensaje recibido
+                    String mensaje = new String(paqueteRebote.getData(), 0, length, StandardCharsets.UTF_8);
+
                     System.out.println("Información recibida de: " + paqueteRebote.getAddress() + ", mensaje: " + mensaje + " \n");
+
+                    if (mensaje.contains("online")){
+
+                        // Encontrar el índice del primer espacio después del nombre de usuario
+                        int indiceEspacioDespuesDeUsuario = mensaje.indexOf(' ', mensaje.indexOf(':') + 2);
+
+                        // Extraer el nombre de usuario utilizando substring
+                        String nombreUsuario = mensaje.substring(0, indiceEspacioDespuesDeUsuario);
+
+                        System.out.println(nombreUsuario);
+
+                        UIChat.añadirTextoListadoUsuario(nombreUsuario);
+
+                    }else if(mensaje.contains("offline")){
+
+
+                        // Encontrar el índice del primer espacio después del nombre de usuario
+                        int indiceEspacioDespuesDeUsuario = mensaje.indexOf(' ', mensaje.indexOf(':') + 2);
+
+                        // Extraer el nombre de usuario utilizando substring
+                        String nombreUsuario = mensaje.substring(0, indiceEspacioDespuesDeUsuario);
+
+                        System.out.println(nombreUsuario);
+
+                        UIChat.eliminarUsuarioListado(nombreUsuario);
+
+                    }
 
                     UIChat.añadirTexto(mensaje);
 
