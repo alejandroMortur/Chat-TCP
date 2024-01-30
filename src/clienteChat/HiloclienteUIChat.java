@@ -51,7 +51,7 @@ public class HiloclienteUIChat implements Runnable{
                 if (!mensajeRecibido) {
 
                     int length = paqueteRebote.getLength(); // Obtener el tamaño real del mensaje recibido
-                    String mensaje = new String(paqueteRebote.getData(), 0, length, StandardCharsets.UTF_8);
+                    String mensaje = new String(paqueteRebote.getData(), 0, paqueteRebote.getLength(), StandardCharsets.UTF_8);
 
                     System.out.println("Información recibida de: " + paqueteRebote.getAddress() + ", mensaje: " + mensaje + " \n");
 
@@ -63,22 +63,13 @@ public class HiloclienteUIChat implements Runnable{
                         // Extraer el nombre de usuario utilizando substring
                         String nombreUsuario = mensaje.substring(0, indiceEspacioDespuesDeUsuario);
 
-                        System.out.println(nombreUsuario);
-
-                        UIChat.añadirTextoListadoUsuario(nombreUsuario);
-
                     }else if(mensaje.contains("offline")){
-
 
                         // Encontrar el índice del primer espacio después del nombre de usuario
                         int indiceEspacioDespuesDeUsuario = mensaje.indexOf(' ', mensaje.indexOf(':') + 2);
 
                         // Extraer el nombre de usuario utilizando substring
                         String nombreUsuario = mensaje.substring(0, indiceEspacioDespuesDeUsuario);
-
-                        System.out.println(nombreUsuario);
-
-                        UIChat.eliminarUsuarioListado(nombreUsuario);
 
                     }
 

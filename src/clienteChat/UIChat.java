@@ -25,9 +25,6 @@ public class UIChat extends JFrame {
     private JTextField entrada_texto;
     private JButton boton_enviar;
     private JTextPane panel_texto;
-    private JList<String> listado_usuarios;
-    private final DefaultListModel<String> modelo_lista_usuarios;
-    private JLabel etiqueta_conectado;
     private JLabel etiqueta_usuario;
     private String nombre = "";
     private String texto = "";
@@ -48,12 +45,10 @@ public class UIChat extends JFrame {
         this.nombre = nombre;
         this.redBroadcast = redBroadcast;
 
-        modelo_lista_usuarios = new DefaultListModel<>();
-        listado_usuarios.setModel(modelo_lista_usuarios);
+        panel_texto.setAutoscrolls(true);
+
 
         etiqueta_usuario.setText("Usuario: " + nombre);
-
-        modelo = (DefaultListModel) listado_usuarios.getModel();
 
         setEventos();
 
@@ -66,6 +61,7 @@ public class UIChat extends JFrame {
             public void windowClosing(WindowEvent e) {
 
                 try {
+
 
                     System.out.println("La ventana se está cerrando...");
 
@@ -149,45 +145,6 @@ public class UIChat extends JFrame {
         } catch (BadLocationException e) {
 
             System.out.println("Error al añadir texto: " + e);
-
-        }
-
-    }
-
-    public void añadirTextoListadoUsuario(String texto) {
-
-        modelo = (DefaultListModel) listado_usuarios.getModel();
-        if(!modelo.contains(texto)){
-
-            modelo.addElement("\n" + texto); // Usar el parámetro 'texto' en lugar de 'nombre'
-
-        }
-
-    }
-
-    public void eliminarUsuarioListado(String usuario) {
-
-        modelo = (DefaultListModel<String>) listado_usuarios.getModel();
-        int indiceAEliminar = -1;
-
-        for (int i = 0; i < modelo.size(); i++) {
-
-            String elemento = modelo.getElementAt(i).toString();
-            System.out.println("Lista: "+elemento);
-
-            if (elemento.equals("\n"+usuario)) {
-
-                indiceAEliminar = i;
-                break;
-
-            }
-
-        }
-
-        if (indiceAEliminar != -1) {
-
-            System.out.println("Elemento borrado");
-            modelo.remove(indiceAEliminar);
 
         }
 

@@ -55,12 +55,10 @@ public class HiloServidorValidarUsuarios implements Runnable {
 
                     String nombreUsuario = mensaje.split(" ")[1];
 
-                    System.out.println(nombreUsuario);
-
                     System.out.println("\n---------------------------------------------------------\n");
                     System.out.println(mensaje+" correctamente");
                     System.out.println("\n---------------------------------------------------------\n");
-                    // Realizar acciones para confirmar la conexión del usuario
+
                 }
 
                 // Cerrar la conexión con el cliente

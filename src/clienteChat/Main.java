@@ -35,7 +35,8 @@ public class Main {
             UIRegistro = new UIRegistro(clienteSocket, input, output);
             UIRegistro.setContentPane(UIRegistro.panel_Registro);
             UIRegistro.setTitle("Entrada chat");
-            UIRegistro.setSize(400, 400);
+            UIRegistro.setResizable(false);
+            UIRegistro.setSize(400, 500);
             UIRegistro.setVisible(true);
             UIRegistro.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -65,7 +66,8 @@ public class Main {
             UI.setContentPane(UI.panel_chat);
 
             UI.setTitle("Chat online");
-            UI.setSize(700, 600);
+            UI.setResizable(false);
+            UI.setSize(840, 720);
             UI.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             UI.setVisible(true);
 

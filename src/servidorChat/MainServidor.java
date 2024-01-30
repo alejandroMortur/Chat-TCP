@@ -10,6 +10,7 @@ import java.net.*;
 public class MainServidor {
 
     private static final int PuertoServer = 6001;
+    private static String usuarios = "";
 
     public static void main(String args[]) {
 

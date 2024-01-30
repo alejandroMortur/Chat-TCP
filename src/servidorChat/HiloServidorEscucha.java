@@ -8,15 +8,11 @@ import java.net.*;
 
 //import tratamiento strings
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
 
 public class HiloServidorEscucha implements Runnable {
 
     private static final String MULTICAST_ADDRESS = "239.0.0.1";
     private static final int MULTICAST_PORT = 12345;
-
 
     @Override
     public void run() {
@@ -41,7 +37,7 @@ public class HiloServidorEscucha implements Runnable {
                 if (!mensajeRecibido) {
 
                     int length = paquete.getLength(); // Obtener el tamaño real del mensaje recibido
-                    String mensaje = new String(paquete.getData(), 0, length, StandardCharsets.UTF_8);
+                    String mensaje = new String(paquete.getData(), 0, paquete.getLength(), StandardCharsets.UTF_8);
 
                     if (mensaje.contains("offline")) {
 
@@ -56,7 +52,7 @@ public class HiloServidorEscucha implements Runnable {
                         System.out.println(mensaje);
                         System.out.println("\n-------------------------------\n");
 
-                    }else{
+                    }
 
                         System.out.println("Información recibida de: " + paquete.getAddress() + ", mensaje: " + mensaje + " \n");
 
@@ -65,7 +61,7 @@ public class HiloServidorEscucha implements Runnable {
                         DatagramPacket paqueteRebote = new DatagramPacket(buffer, buffer.length, InetAddress.getByName(MULTICAST_ADDRESS), MULTICAST_PORT);
                         redBroadcast.send(paqueteRebote);
 
-                    }
+
 
                     mensajeRecibido = true; // Marcar que se ha recibido un mensaje
 
