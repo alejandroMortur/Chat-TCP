@@ -10,15 +10,22 @@ import javax.swing.JOptionPane;
 import javax.swing.JFrame;
 
 //import sockets
-import java.net.*;
+import java.net.Socket;
+import java.net.MulticastSocket;
+import java.net.InetAddress;
+
 
 public class Main {
 
+    //variables gestoras conexión TCP Cliente-Servidor
     private static final String ipServer = "127.0.0.1";
-
     private static final int puertoServer = 6001;
+
+    //variables gestoras registro y UI del chat
     private static UIRegistro UIRegistro = null;
     private static UIChat UI = null;
+
+    //variables gestoras grupo multicast
     private static final String ipMulticast = "239.0.0.1";
     private static final int multicastPort = 12345;
 
@@ -42,6 +49,7 @@ public class Main {
 
         } catch (IOException e) {
 
+            //en caso de no poder conectarse al servidor mensaje de error
             JOptionPane.showMessageDialog(null, "Error al conectarse al servidor\n\nReinicie el programa y intentelo de nuevo", "Error de conexión", JOptionPane.INFORMATION_MESSAGE);
             System.out.println("Error: " + e);
 
@@ -71,14 +79,15 @@ public class Main {
             UI.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             UI.setVisible(true);
 
+            //lanzamiento hilo gestor UI del chat
             HiloclienteUIChat hiloClienteUIChat = new HiloclienteUIChat(UI, redBroadcast,ipMulticast ,multicastPort);
             Thread hilo = new Thread(hiloClienteUIChat);
             hilo.start();
 
 
-
         } catch (IOException e) {
 
+            //En caso de error al conectarse al grupo multicast, mensaje de error
             JOptionPane.showMessageDialog(null, "Error al unirse al chat: " + e.getMessage(), "Error de conexión", JOptionPane.ERROR_MESSAGE);
             System.out.println("Error al unirse al chat: " + e.getMessage());
 
@@ -88,6 +97,7 @@ public class Main {
 
     public static void detenerhilo(){
 
+        //en caso de que el cliente cierre la ventana de la UI, forzar cese hilo
         HiloclienteUIChat.detener();
 
     }
